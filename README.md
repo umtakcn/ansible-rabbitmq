@@ -1,4 +1,4 @@
-Rabbitmq Cluster Playbook
+Rabbitmq cluster installation playbook.
 
 You can install Rabbitmq Cluster via this Ansible role.
 
