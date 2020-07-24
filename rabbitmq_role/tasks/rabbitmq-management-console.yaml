@@ -1,0 +1,27 @@
+- name: Install Rabbitmq Management Console.
+  hosts: all
+  tasks:
+  - name: Enable Management Plugin.
+    command: chdir=/usr/lib/rabbitmq/bin/ rabbitmq-plugins enable rabbitmq_management
+  - name: Set username and password.
+    command: "{{ item }}"
+    with_items:
+      - rabbitmqctl add_user admin password
+      - rabbitmqctl set_user_tags admin administrator
+      - rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+  - name: Give authorizations.
+    command: chown -R rabbitmq:rabbitmq /var/lib/rabbitmq/
+  - name: Create rabbitmq.conf.
+    copy:
+      content: loopback_users = none
+      dest: /etc/rabbitmq/rabbitmq.conf
+      owner: root
+      group: root
+  - name: Create rabbitmq-env.conf.
+    template:
+      src: /opt/rabbitmq_role/templates/rabbitmq-env.conf.j2
+      dest: /etc/rabbitmq/rabbitmq-env.conf
+  - name: Restart Rabbitmq service.
+    service:
+      name: rabbitmq-server
+      state: restarted

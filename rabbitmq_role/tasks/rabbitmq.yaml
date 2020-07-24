@@ -1,0 +1,17 @@
+- name: Install Rabbitmq.
+  hosts: all
+  tasks:
+    - name: Copy necessary files.
+      copy:
+        src: "{{ item }}"
+        dest: /opt
+      with_items:
+          - /opt/files/erlang.rpm
+          - /opt/files/socat.rpm
+          - /opt/files/rabbitmq-server.rpm
+    - name: Install Erlang.
+      command: yum install -y /opt/erlang.rpm
+    - name: Install Socat
+      command: yum install -y /opt/socat.rpm
+    - name: Install Rabbitmq-server.
+      command: yum install -y /opt/rabbitmq-server.rpm

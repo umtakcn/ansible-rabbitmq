@@ -1,0 +1,8 @@
+- name: Start Rabbitmq service.
+  hosts: all
+  tasks:
+    - name: Start Rabbitmq service.
+      service:
+        name: rabbitmq-server
+        state: started
+        enabled: yes

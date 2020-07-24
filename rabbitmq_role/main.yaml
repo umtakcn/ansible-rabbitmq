@@ -1,0 +1,12 @@
+- name: Install Rabbitmq.
+  hosts: all
+  tasks:
+   - name: Import variables.
+     include_vars:
+      dir: vars
+      extensions:
+       - yaml
+- import_playbook: tasks/rabbitmq.yaml
+- import_playbook: tasks/services.yaml
+- import_playbook: tasks/rabbitmq-management-console.yaml
+- import_playbook: tasks/rabbitmq-cluster.yaml

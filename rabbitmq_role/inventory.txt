@@ -1,0 +1,21 @@
+Master ansible_host=10.00.00.00 ansible_ssh_pass=
+Slave1 ansible_host=10.00.00.00 ansible_ssh_pass=
+Slave2 ansible_host=10.00.00.00 ansible_ssh_pass=
+
+[Master_Server]
+Master
+
+[Master_Server:vars]
+hostname=Master
+
+[Slave_Server1]
+Slave1
+
+[Slave_Server1:vars]
+hostname=Slave1
+
+[Slave_Server2]
+Slave2
+
+[Slave_Server2:vars]
+hostname=Slave2

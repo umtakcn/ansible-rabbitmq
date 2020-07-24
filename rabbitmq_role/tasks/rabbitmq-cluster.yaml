@@ -1,0 +1,51 @@
+- name: Rabbitmq Cluster kur.
+  hosts: all 
+  tasks:
+    - name: Edit host file.
+      template:
+        src: /opt/rabbitmq_role/templates/hosts.j2
+        dest: /etc/hosts
+    - name: Pull cookie from master.
+      fetch:
+        src: /var/lib/rabbitmq/.erlang.cookie
+        dest: /opt/.erlang.cookie/
+        flat: yes
+      when: ansible_host == '{{ ip_master }}'
+    - name: Synchronize the cookies.
+      copy:
+        src: /opt/.erlang.cookie/.erlang.cookie
+        dest: /var/lib/rabbitmq/.erlang.cookie
+    - name: Give authorizations.
+      file:
+        path: /var/lib/rabbitmq/.erlang.cookie
+        owner: rabbitmq
+        group: rabbitmq
+        mode: '0400'
+    - name:  Reboot the server.
+      shell: reboot
+      async: 1
+      poll: 0
+    - name: Wait for server to open.
+      wait_for_connection:
+        connect_timeout: 20
+        sleep: 5
+        delay: 5
+        timeout: 300
+    - name: Stop slave 1 Rabbitmq app.
+      command: chdir=/usr/lib/rabbitmq/bin/ rabbitmqctl stop_app
+      when: ansible_host == '{{ ip_slave1 }}'
+    - name: Stop slave 2 Rabbitmq app.
+      command: chdir=/usr/lib/rabbitmq/bin/ rabbitmqctl stop_app
+      when: ansible_host == '{{ ip_slave2 }}'
+    - name: Add slave 1 to cluster.
+      command: chdir=/usr/lib/rabbitmq/bin/ rabbitmqctl join_cluster rabbit@Master
+      when: ansible_host == '{{ ip_slave1 }}'
+    - name: Add slave 2 to cluster.
+      command: chdir=/usr/lib/rabbitmq/bin/ rabbitmqctl join_cluster rabbit@Master
+      when: ansible_host == '{{ ip_slave2 }}'
+    - name: Slave 1 rabbitmq app'i başlat. Start slave 1 Rabbitmq app.
+      command: chdir=/usr/lib/rabbitmq/bin/ rabbitmqctl start_app
+      when: ansible_host == '{{ ip_slave1 }}'
+    - name: Slave 2'yi rabbitmq app'i başlat. Start slave 2 Rabbitmq app.
+      command: chdir=/usr/lib/rabbitmq/bin/ rabbitmqctl start_app
+      when: ansible_host == '{{ ip_slave2 }}'
